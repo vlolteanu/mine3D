@@ -321,15 +321,46 @@ Element.prototype = {
 		}
 
 	},
+	
+	fuckNeighbours : function() {
+		
+		var i,
+			neighbors = this.neighbors,
+			undiscovered = 0;
+		
+		if (this.state !== 'number')
+			return;
+		
+		for ( i = 0; i < neighbors.length; i++ ) {
+			if (neighbors[i].state == 'cube')
+				undiscovered += 1;
+		}
+		
+		if ( undiscovered !== this.value )
+			return;
+		
+		//return;
+		
+		for ( i = 0; i < neighbors.length; i++ ) {
+
+			if (neighbors[i].state == 'cube') {
+				neighbors[i].openMine();
+				return;
+			}
+
+		}
+	},
 
 	valueDecreased : function() {
-
+		
 		if ( this.value === 0 && this.state !== 'cube' ) {
 
 			this.open();
 
 		}
-
+		else {
+			this.fuckNeighbours()
+		}
 	},
 
 	setMine : function() {
@@ -485,9 +516,18 @@ Element.prototype = {
 			Game.over( false, this );
 
 		} else {
-
+			var i,
+				neighbors = this.neighbors;
+			
 			this.open();
+			
+			
+			
+			for ( i = 0; i < neighbors.length; i++ ) {
 
+				neighbors[i].fuckNeighbours();
+
+			}
 		}
 
 	},
@@ -508,6 +548,7 @@ Element.prototype = {
 		if ( this.value ) {
 
 			this.changeState( 'number' );
+			this.fuckNeighbours();
 
 		} else {
 
